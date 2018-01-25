@@ -11,7 +11,7 @@ RUN yum update -y && yum install iproute tcpdump python &&\
 VOLUME ["/opt/so"]
 
 # Create socore user.
-RUN groupadd --gid 939 pcap && \
+RUN groupadd --gid 939 socore && \
     adduser --uid 939 --gid 939 \
     --home-dir /opt/so --no-create-home socore
 
