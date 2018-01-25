@@ -22,7 +22,7 @@ chown -R bro:bro /nsm/bro/spool
 
 echo
 echo "Backing up /opt/bro/share/bro/securityonion/add-interface-to-logs.bro to ~/add-interface-to-logs.bro.orig..."
-sudo cp -av /opt/bro/share/bro/securityonion/add-interface-to-logs.bro ~/add-interface-to-logs.bro.orig
+sudo cp -av /opt/bro/share/bro/securityonion/add-interface-to-logs.bro /opt/bro/share/bro/securityonion/add-interface-to-logs.bro.orig
 
 echo
 echo "Copying /opt/bro/etc/node.cfg to /opt/bro/etc/afpnode.cfg..."
