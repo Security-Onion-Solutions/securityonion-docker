@@ -8,16 +8,16 @@ RUN yum update -y && \
     yum clean all
 
 # Install epel
-RUN yum -y install epel-release bash libpcap iproute
-RUN yum -y install jemalloc numactl libnl3 libdnet gdb GeoIP
-RUN yum clean all
+RUN yum -y install epel-release bash libpcap iproute jemalloc numactl libnl3 libdnet gdb GeoIP && \
+    yum clean all
 
 # Copy over the Bro package
-ADD https://github.com/Security-Onion-Solutions/securityonion-docker/releases/download/Bro2.5.2/securityonion-bro-2.5.2.1-securityonion.rpm /tmp/securityonion-bro-2.5.2.1-securityonion.rpm
+#ADD https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/Bro_2.5.2/securityonion-bro-2.5.2.1-securityonion.rpm /tmp/securityonion-bro-2.5.2.1-securityonion.rpm
 
 # Install the Bro package
-RUN rpm -i /tmp/securityonion-bro-2.5.2.1-securityonion.rpm
-RUN rm /tmp/securityonion*
+#RUN rpm -i /tmp/securityonion-bro-2.5.2.1-securityonion.rpm
+#RUN rm /tmp/securityonion*
+RUN rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/Bro_2.5.2/securityonion-bro-2.5.2.1-securityonion.rpm
 
 # Replace local.bro with the SO one (This will need reworked)
 #COPY files/local.bro /opt/bro/share/bro/site/local.bro
