@@ -7,12 +7,7 @@ LABEL description="Netsniff-ng 0.6.4 running in a docker for use with Security O
 RUN yum update -y && yum install cron &&\
     yum clean all
 
-# Copy over the Netsniff package
-#ADD https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/netsniff-ng_0.6.4/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm /tmp/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm
-
 # Install the Netsniff package
-#RUN rpm -i /tmp/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm
-#RUN rm /tmp/securityonion*
 RUN rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/netsniff-ng_0.6.4/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm
 
 VOLUME ["/nsm/sensor_data"]
