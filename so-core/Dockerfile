@@ -4,15 +4,15 @@ LABEL maintainer "Security Onion Solutions, LLC"
 LABEL version="SO Core 0.0.1"
 LABEL description="Security Onion Core Functions"
 
-RUN yum update -y && yum install cron iproute tcpdump python &&\
+RUN yum update -y && yum install iproute tcpdump python &&\
     yum clean all
 
 
-VOLUME ["/nsm/sensor_data"]
+VOLUME ["/opt/so"]
 
 # Create socore user.
-RUN groupadd --gid 938 pcap && \
-    adduser --uid 938 --gid 938 \
-    --home-dir /nsm/sensor_data --no-create-home pcap
+RUN groupadd --gid 939 pcap && \
+    adduser --uid 939 --gid 939 \
+    --home-dir /opt/so --no-create-home socore
 
 ENTRYPOINT ["/bin/bash"]
