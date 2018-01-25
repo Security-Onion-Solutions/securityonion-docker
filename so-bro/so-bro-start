@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$BRO_ENABLED" = "yes" ]; then
+        echo -n "so-bro: "
+        if docker ps | grep -q so-bro; then
+                echo "Already started!"
+        else
+		# Does not need to publish any ports
+		# All communication will happen on $DOCKERNET
+                docker run --name=so-bro \
+                        -t \
+                        --priveleged=true \
+                        --net=host \ 
+                        --detach \
+                        --volume /nsm/bro/logs:/nsm/bro/logs \
+                        --volume /nsm/bro/spool:/nsm/bro/spool \
+                        --volume /opt/bro/etc:/opt/bro/etc \
+                        --volume /opt/bro/etc/afpnode.cfg:/opt/bro/etc/node.cfg \
+                        --volume /opt/bro/share/bro:/opt/bro/share/bro \
+                        $DOCKERHUB/so-bro
+
+        fi
+fi
