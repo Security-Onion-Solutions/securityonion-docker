@@ -44,10 +44,5 @@ sudo docker run --privileged=true -v /nsm/bro/logs:/nsm/bro/logs -v /nsm/bro/spo
 
 To revert back to the original Bro config:
 ```
-sudo docker stop so-bro
-sudo cp /opt/bro/share/bro/securityonion/add-interface-to-logs.bro.orig /opt/bro/share/bro/securityonion/add-interface-to-logs.bro
-sudo sed -i 's|BRO_ENABLED=no|BRO_ENABLED=yes|g' /etc/nsm/securityonion.conf
-sudo chown -R sguil:sguil /nsm/bro/logs
-sudo chown -R sguil:sguil /nsm/bro/spool
-sudo broctl deploy
+sudo bash securityonion-docker/so-bro/revert.sh
 ```
