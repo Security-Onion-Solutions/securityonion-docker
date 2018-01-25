@@ -13,7 +13,7 @@ RUN yum update -y && yum install cron &&\
 # Install the Netsniff package
 #RUN rpm -i /tmp/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm
 #RUN rm /tmp/securityonion*
-rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/netsniff-ng_0.6.4/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm
+RUN rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/netsniff-ng_0.6.4/securityonion-netsniff-ng-0.6.4.0-securityonion.rpm
 
 VOLUME ["/nsm/sensor_data"]
 
