@@ -4,9 +4,15 @@ LABEL maintainer "Security Onion Solutions, LLC"
 LABEL version="SO Core 0.0.1"
 LABEL description="Security Onion Core Functions"
 
-RUN yum update -y && yum install iproute tcpdump python &&\
+RUN yum update -y && yum install iproute tcpdump &&\
     yum clean all
 
+RUN mkdir -p /opt/socore/bin && mkdir /opt/socore/conf
+COPY bin/* /opt/socore/bin/
+
+# This is temp
+COPY files/securityonion.conf /opt/socore/conf
+COPY files/startso.sh /opt/socore/
 
 VOLUME ["/opt/so"]
 
