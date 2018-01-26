@@ -6,17 +6,12 @@ host=localhost
 type=proxy
 host=localhost
 
-#[sotest-eth0]   
-#type=worker
-#host=localhost
-#inter#face=eth0
-#lb_method=pf_ring
-#lb_procs=7
-
-[sotest-eth1]   
+[sotest-eth1]
 type=worker
 host=localhost
-interface=eth1
-lb_method=pf_ring
+interface=af_packet::eth1
+lb_method=custom
 lb_procs=7
-
+af_packet_fanout_id=23
+af_packet_fanout_mode=AF_Packet::FANOUT_HASH
+af_packet_buffer_size=128*1024*1024
