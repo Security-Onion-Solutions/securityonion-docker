@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$CURATOR_ENABLED" = "yes" ]; then
+        echo -n "so-curator: "
+        if docker ps | grep -q so-curator; then
+                echo "Already started!"
+        else
+		# No published ports
+                docker run --name=so-curator \
+                        --detach \
+                        --volume /etc/curator/config/curator.yml:/etc/curator/config/curator.yml:ro \
+                        --volume /etc/curator/action/:/etc/curator/action:ro \
+                        --volume /var/log/curator/:/var/log/curator/ \
+                        -it \
+                        $CURATOR_OPTIONS \
+                        $DOCKERHUB/so-curator
+                        docker network connect --alias curator $DOCKERNET so-curator
+        fi
+fi

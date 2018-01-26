@@ -1,0 +1,80 @@
+#!/bin/bash
+. /usr/lib/nsmnow/lib-console-utils
+. /etc/nsm/securityonion.conf
+
+function ok(){
+	echo -ne "$STAT[${GREEN_BOLD}  OK  ${NORMAL}]"
+}
+function fail(){
+	echo -ne "$STAT[${RED_BOLD} FAIL ${NORMAL}]"
+}
+
+# If Elasticsearch is not enabled, then exit immediately
+[ "$ELASTICSEARCH_ENABLED" != "yes" ] && exit
+
+echo -ne "${BLUE_BOLD}Status: Elastic stack${NORMAL}"
+echo
+
+if [ "$ELASTICSEARCH_ENABLED" = "yes" ]; then
+	echo -ne "  ${BLUE}*${NORMAL} so-elasticsearch"
+	if docker ps |  grep -q so-elasticsearch; then
+		ok
+	else
+		fail
+	fi
+fi
+
+if [ "$LOGSTASH_ENABLED" = "yes" ]; then
+	echo -ne "   ${BLUE}*${NORMAL} so-logstash"
+	if docker ps |	grep -q so-logstash; then
+		ok
+	else
+		fail
+	fi
+fi
+
+if [ "$KIBANA_ENABLED" = "yes" ]; then
+	echo -ne "   ${BLUE}*${NORMAL} so-kibana"
+	if docker ps |  grep -q so-kibana; then
+                ok
+        else
+                fail
+        fi
+fi
+
+if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
+	echo -ne "   ${BLUE}*${NORMAL} so-freqserver"	
+	if docker ps |  grep -q so-freqserver; then
+                ok
+        else
+                fail
+        fi
+fi
+
+if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
+	echo -ne "   ${BLUE}*${NORMAL} so-domainstats"
+	if docker ps |  grep -q so-domainstats; then
+		ok
+        else
+		fail
+        fi
+fi
+
+if [ "$CURATOR_ENABLED" = "yes" ]; then
+	echo -ne "   ${BLUE}*${NORMAL} so-curator"
+	if docker ps |  grep -q so-curator; then
+		ok
+        else
+		fail
+        fi
+fi
+
+if [ "$ELASTALERT_ENABLED" = "yes" ]; then
+	echo -ne "   ${BLUE}*${NORMAL} so-elastalert"
+        if docker ps |  grep -q so-elastalert; then
+		ok
+	else
+		fail
+        fi
+fi
+echo

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+. /etc/nsm/securityonion.conf
+
+header "Configuring Curator"
+
+CURATOR_DEL="/etc/curator/action/delete.yml"
+
+if [ -f $CURATOR_DEL ]; then
+	sed -i "s/disk_space:.*/disk_space: $LOG_SIZE_LIMIT/" $CURATOR_DEL
+fi
+echo "Done!"

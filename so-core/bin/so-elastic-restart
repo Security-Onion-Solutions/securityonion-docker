@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+/usr/sbin/so-elastic-stop
+echo
+/usr/sbin/so-elastic-start

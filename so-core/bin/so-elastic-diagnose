@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Source common settings
+. /usr/sbin/so-common
+
+# Check for log files
+for FILE in /var/log/elasticsearch/*.log /var/log/logstash/*.log /var/log/kibana/*.log /var/log/elastalert/*.log /var/log/curator/*.log /var/log/freqserver/*.log /var/log/apache2/*.log; do
+
+# If file exists, then look for errors or warnings 
+if [ -f $FILE ]; then
+	MESSAGE=`grep -i 'ERROR\|FAIL\|WARN' $FILE` 
+	if [ ! -z "$MESSAGE" ]; then
+		header $FILE
+		echo $MESSAGE | sed 's/WARN/\nWARN/g' | sed 's/WARNING/\nWARNING/g' | sed 's/ERROR/\nERROR/g' | sort | uniq -c | sort -nr
+		echo
+	fi
+fi
+done

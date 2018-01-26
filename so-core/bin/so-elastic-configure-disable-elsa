@@ -1,0 +1,16 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+header "Disabling ELSA"
+rm -f /etc/cron.d/elsa
+FILE="/etc/nsm/securityonion.conf"
+sed -i 's/ELSA=YES/ELSA=NO/' $FILE
+service sphinxsearch stop
+echo "manual" > /etc/init/sphinxsearch.conf.override
+sed -i 's|ELSA|Kibana|g' /usr/bin/sguil.tk
+sed -i 's|elsa|kibana|g' /usr/bin/sguil.tk
+sed -i 's|ELSA|Kibana|g' /usr/lib/sguil/extdata.tcl
+sed -i "s|elsa-query/?query_string=\"\$ipAddr\"%20groupby:program|app/kibana#/dashboard/68563ed0-34bf-11e7-9b32-bb903919ead9?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-24h,mode:quick,to:now))\&_a=(columns:!(_source),index:'logstash-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'\"\$ipAddr\"')),sort:!('@timestamp',desc))|g" /usr/lib/sguil/extdata.tcl
+echo "Done!"
+

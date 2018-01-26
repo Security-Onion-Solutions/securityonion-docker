@@ -1,0 +1,29 @@
+#!/bin/bash
+
+. /usr/sbin/so-common
+
+ELASTICDIR="/opt/elastic"
+mkdir -p $ELASTICDIR
+cd $ELASTICDIR
+SRC="$ELASTICDIR/src"
+
+GITREPO="elastic-test"
+GITURL="https://github.com/Security-Onion-Solutions/$GITREPO.git"
+DOCKERHUB="securityonionsolutions"
+if [ "$1" == "dev" ]; then
+	GITURL="https://github.com/dougburks/$GITREPO.git"
+	DOCKERHUB="dougburks"
+fi
+
+ELASTICDOWNLOADCONF="/etc/nsm/elasticdownload.conf"
+if ! grep "# Elastic Download" $ELASTICDOWNLOADCONF >/dev/null 2>&1; then
+cat << EOF >> $ELASTICDOWNLOADCONF
+
+# Elastic Download
+GITREPO="$GITREPO"
+GITURL="$GITURL"
+DOCKERHUB="$DOCKERHUB"
+EOF
+fi
+
+[ -f $ELASTICDOWNLOADCONF ] && . $ELASTICDOWNLOADCONF

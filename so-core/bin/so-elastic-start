@@ -1,0 +1,42 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+# Need to remove the existing containers before starting new ones.
+# so-elastic-stop does run so-elastic-remove after stopping containers,
+# but we need to run it again here just in case.
+# The common scenario would be a user rebooting without first
+# running so-elastic-stop.
+/usr/sbin/so-elastic-remove
+
+# Configure firewall
+/usr/sbin/so-elastic-configure-ufw
+
+echo
+echo "Starting containers:"
+echo
+
+# Start so-freqserver
+. /usr/sbin/so-elastic-start-freqserver
+
+# Start so-domainstats
+. /usr/sbin/so-elastic-start-domainstats
+
+# Start so-elasticsearch
+. /usr/sbin/so-elastic-start-elasticsearch
+
+# Start so-logstash
+. /usr/sbin/so-elastic-start-logstash
+
+# Start so-kibana
+. /usr/sbin/so-elastic-start-kibana
+
+# Start so-elastalert
+. /usr/sbin/so-elastic-start-elastalert
+
+# Start so-curator
+. /usr/sbin/so-elastic-start-curator
+
+echo
