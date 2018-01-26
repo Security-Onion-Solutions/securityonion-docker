@@ -14,6 +14,7 @@ COPY bin/* /opt/socore/bin/
 COPY files/securityonion.conf /opt/socore/conf
 COPY files/startso.sh /opt/socore/
 COPY bro /opt/socore/bro
+RUN chmod +x /opt/socore/startso.sh
 RUN chmod +x /opt/socore/bin/*
 
 VOLUME ["/opt/so"]
