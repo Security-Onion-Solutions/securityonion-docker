@@ -111,7 +111,7 @@
 #@load policy/securityonin/apt1
 
 # You can load your own intel into:
-# /opt/bro/share/bro/intel/
+# /opt/so/bro/policy/intel/
 @load policy/intel
 
 # ShellShock - detects successful exploitation of Bash vulnerability CVE-2014-6271
