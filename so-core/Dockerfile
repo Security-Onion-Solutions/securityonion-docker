@@ -4,7 +4,7 @@ LABEL maintainer "Security Onion Solutions, LLC"
 LABEL version="SO Core 0.0.1"
 LABEL description="Security Onion Core Functions"
 
-RUN yum update -y && yum -y install iproute tcpdump rsync &&\
+RUN yum update -y && yum -y install iproute tcpdump rsync docker-client &&\
     yum clean all
 
 RUN mkdir -p /opt/socore/bin && mkdir /opt/socore/conf && mkdir /opt/socore/bro
