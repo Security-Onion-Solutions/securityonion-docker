@@ -25,6 +25,10 @@ echo "Backing up /opt/bro/share/bro/securityonion/add-interface-to-logs.bro to /
 sudo cp -av /opt/bro/share/bro/securityonion/add-interface-to-logs.bro /opt/bro/share/bro/securityonion/add-interface-to-logs.bro.orig
 
 echo
+echo "Backing up /opt/bro/share/bro/securityonion/sensortab.bro to /opt/bro/share/bro/securityonion/sensortab.bro..."
+sudo cp -av /opt/bro/share/bro/securityonion/sensortab.bro /opt/bro/share/bro/securityonion/sensortab.bro.orig
+
+echo
 echo "Copying /opt/bro/etc/node.cfg to /opt/bro/etc/afpnode.cfg..."
 sudo cp -av /opt/bro/etc/node.cfg /opt/bro/etc/afpnode.cfg
 

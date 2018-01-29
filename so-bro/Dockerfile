@@ -8,8 +8,9 @@ RUN yum update -y && \
     yum clean all
 
 # Install epel
-RUN yum -y install epel-release bash libpcap iproute jemalloc numactl libnl3 libdnet gdb GeoIP && \
-    yum clean all
+RUN yum -y install epel-release bash libpcap iproute && yum clean all
+RUN yum -y install jemalloc numactl libnl3 libdnet gdb GeoIP && \
+    yum -y erase epel-release && yum clean all && rm -rf /var/cache/yum
 
 # Install the Bro package
 RUN rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/Bro_2.5.2/securityonion-bro-2.5.2.1-securityonion.rpm

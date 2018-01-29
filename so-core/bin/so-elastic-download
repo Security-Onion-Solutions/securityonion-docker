@@ -1,0 +1,74 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+. /etc/nsm/elasticdownload.conf
+
+function download {
+
+header "Adding Docker repo"
+cp $SRC/etc/apt/preferences.d/securityonion-docker /etc/apt/preferences.d/
+apt-get -y install apt-transport-https ca-certificates curl > /dev/null
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable"
+echo "Done!"
+
+header "Updating package list"
+apt-get update > /dev/null
+echo "Done!"
+
+header "Installing Docker"
+# Check to see if docker-ce is installed
+if [ $(dpkg -l | grep -q docker-ce) ]; then
+	:
+else
+	apt-get -y install docker-ce > /dev/null
+fi
+echo "Done!"
+
+header "Enabling DOCKER_CONTENT_TRUST"
+echo "export DOCKER_CONTENT_TRUST=1" >> /etc/profile.d/securityonion-docker.sh
+export DOCKER_CONTENT_TRUST=1
+echo "Done!"
+
+header "Downloading Docker containers"
+for i in so-elasticsearch so-kibana so-logstash so-elastalert so-curator so-freqserver so-domainstats; do
+	docker pull --disable-content-trust=false $DOCKERHUB/$i
+done
+echo "Done!"
+
+header "Installing new packages"
+for i in securityonion-samples-bro libapache2-mod-authnz-external; do
+	if dpkg -l | grep -q $i; then
+	:
+	else
+	apt-get install -y $i > /dev/null
+	fi
+done
+echo "Done!"
+
+header "Updating existing packages"
+# Need to ensure we're running the latest versions of these packages
+# so don't just check to see if they've already been installed,
+# force the update
+apt-get install -y securityonion-setup securityonion-sostat securityonion-ossec-rules
+echo "Done!"
+
+}
+
+# Check if already installed
+[ "$INSTALLED" == "yes" ] && echo "Already downloaded/installed!" && exit 0
+
+# Download components
+download
+
+# Check if successful
+if [ $? -eq 0 ]; then
+	ELASTIC_DL_CONF="/etc/nsm/elasticdownload.conf"
+	if grep 'INSTALLED="yes"' $ELASTIC_DL_CONF; then
+		:
+	else
+		echo 'INSTALLED="yes"' >> $ELASTIC_DL_CONF
+	fi
+fi

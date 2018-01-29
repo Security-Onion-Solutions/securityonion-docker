@@ -1,0 +1,22 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
+        echo -n "so-freqserver: "
+        if docker ps | grep -q so-freqserver; then
+                echo "Already started!"
+        else
+		# Does not need to publish any ports
+		# All communication will happen on $DOCKERNET
+                docker run --name=so-freqserver \
+                        --detach \
+                        --volume /var/log/freq_server:/var/log/freq_server \
+                        $FREQ_SERVER_OPTIONS \
+                        $DOCKERHUB/so-freqserver
+                        docker network connect --alias freqserver $DOCKERNET so-freqserver
+        fi
+fi
+

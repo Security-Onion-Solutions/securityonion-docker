@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+echo
+
+header "Configuring Kibana dashboards"
+
+# Check to see if Kibana is available
+max_wait=240
+until curl -s -XGET http://localhost:5601/ > /dev/null ; do
+	wait_step=$(( ${wait_step} + 1 ))
+	if [ ${wait_step} -gt ${max_wait} ]; then
+		echo "ERROR: Kibana not available for more than ${max_wait} seconds."
+		exit 5
+	fi
+	sleep 1s;
+done
+
+# Load dashboards, visualizations, index pattern(s), etc.
+for i in /opt/elastic/src/kibana/dashboards/*.json; do
+	curl -XPOST localhost:5601/api/kibana/dashboards/import?force=true -H 'kbn-xsrf:true' -H 'Content-type:application/json' -d @$i >> /var/log/nsm/so-elastic-configure-kibana-dashboards.log 2>&1 &
+	echo -n "."
+done
+echo

@@ -1,0 +1,51 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$LOGSTASH_ENABLED" = "yes" ]; then
+        echo -n "so-logstash: "
+        if docker ps | grep -q so-logstash; then
+                echo "Already started!"
+        else
+                if [ "$FREQ_SERVER_ENABLED" = "yes" ]; then
+                        cp -f /etc/logstash/optional/*_postprocess_freq_analysis_*.conf /etc/logstash/conf.d/
+                fi
+                if [ "$FREQ_SERVER_ENABLED" = "no" ]; then
+                        rm -f /etc/logstash/conf.d/*_postprocess_freq_analysis_*.conf
+                fi
+                if [ "$DOMAIN_STATS_ENABLED" = "yes" ]; then
+                        cp -f /etc/logstash/optional/8007_postprocess_dns_top1m_tagging.conf /etc/logstash/conf.d/
+                        cp -f /etc/logstash/optional/8008_postprocess_dns_whois_age.conf /etc/logstash/conf.d/
+                fi
+                if [ "$DOMAIN_STATS_ENABLED" = "no" ]; then
+                        rm -f /etc/logstash/conf.d/8007_postprocess_dns_top1m_tagging.conf
+                        rm -f /etc/logstash/conf.d/8008_postprocess_dns_whois_age.conf
+                fi
+
+		# Publish ports to localhost 127.0.0.1 ONLY
+                docker run --name=so-logstash \
+                        --detach \
+                        --env LS_JAVA_OPTS="-Xms$LOGSTASH_HEAP -Xmx$LOGSTASH_HEAP" \
+			--publish $LOGSTASH_PUBLISH_IP:5044:5044 \
+			--publish $LOGSTASH_PUBLISH_IP:6050:6050 \
+                        --publish $LOGSTASH_PUBLISH_IP:6051:6051 \
+                        --publish $LOGSTASH_PUBLISH_IP:6052:6052 \
+                        --publish $LOGSTASH_PUBLISH_IP:6053:6053 \
+                        --publish $LOGSTASH_PUBLISH_IP:9600:9600 \
+			--volume /etc/logstash/log4j2.properties:/usr/share/logstash/config/log4j2.properties:ro \
+                        --volume /etc/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro \
+                        --volume /etc/logstash/logstash-template.json:/logstash-template.json:ro \
+			--volume /etc/logstash/beats-template.json:/beats-template.json:ro \
+                        --volume /etc/logstash/conf.d:/usr/share/logstash/pipeline/:ro \
+                        --volume /etc/nsm/rules:/etc/nsm/rules:ro \
+                        --volume /lib/dictionaries:/lib/dictionaries:ro \
+                        --volume /nsm/import:/nsm/import:ro \
+                        --volume /nsm/logstash:/usr/share/logstash/data/ \
+                        --volume /var/log/logstash:/var/log/logstash \
+                        $LOGSTASH_OPTIONS \
+                        $DOCKERHUB/so-logstash
+                        docker network connect --alias logstash $DOCKERNET so-logstash
+        fi
+fi

@@ -1,0 +1,57 @@
+#!/bin/bash
+
+. /usr/sbin/so-elastic-common
+
+. /etc/nsm/securityonion.conf
+
+if [ "$KIBANA_ENABLED" = "yes" ]; then
+        if docker ps | grep -q so-kibana; then
+                echo -n "so-kibana: "
+                echo "Already started!"
+        else
+                source /etc/nsm/securityonion.conf
+                # Wait for ElasticSearch to come up, so that we can query for version infromation
+                echo -n "Waiting for ElasticSearch..."
+                COUNT=0
+                ELASTICSEARCH_CONNECTED="no"
+                while [[ "$COUNT" -le 240 ]]; do
+                        curl --output /dev/null --silent --head --fail http://"$ELASTICSEARCH_HOST":"$ELASTICSEARCH_PORT"
+                        if [ $? -eq 0 ]; then
+                                ELASTICSEARCH_CONNECTED="yes"
+                                echo "connected!"
+                                break
+                        else
+                                ((COUNT+=1))
+                                sleep 1
+                                echo -n "."
+                        fi
+                done
+                if [ "$ELASTICSEARCH_CONNECTED" == "no" ]; then
+                        echo
+                        echo -e "Connection attempt timed out.  Unable to connect to ElasticSearch.  \nPlease try: \n  -checking log(s) in /var/log/elasticsearch/\n  -running 'sudo docker ps' \n  -running 'sudo so-elastic-restart'" 
+                        echo
+                fi
+                echo -n "so-kibana: "
+                if docker ps | grep -q so-kibana; then
+                        echo "Already started!"
+                else
+			# Publish ports to localhost 127.0.0.1 ONLY
+                        docker run --name=so-kibana \
+                                --detach \
+                                --env "KIBANA_DEFAULTAPPID=$KIBANA_DEFAULTAPPID" \
+                                --publish 127.0.0.1:5601:5601 \
+                                --volume /etc/kibana/:/usr/share/kibana/config/:ro \
+                                --volume /var/log/kibana:/var/log/kibana \
+                                $KIBANA_OPTIONS \
+                                $DOCKERHUB/so-kibana
+                                docker network connect --alias kibana $DOCKERNET so-kibana
+                        # Compare current version of ES with previously stored version.
+                        CURRENT_KIBANA_VERSION=$(curl -s "http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" | jq .version.number | sed 's/"//g')
+                        if [ "$CURRENT_KIBANA_VERSION" != "$KIBANA_VERSION" ]; then
+				echo "Configuring Kibana, please wait..."
+                                /usr/sbin/so-elastic-configure-kibana > /dev/null 2>&1
+                        fi
+                fi
+        fi
+fi
+

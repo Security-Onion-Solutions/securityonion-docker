@@ -4,7 +4,7 @@ LABEL maintainer "Security Onion Solutions, LLC"
 LABEL version="Netsniff-ng 0.6.4"
 LABEL description="Netsniff-ng 0.6.4 running in a docker for use with Security Onion"
 
-RUN yum update -y && yum install cron &&\
+RUN yum update -y &&\
     yum clean all
 
 # Install the Netsniff package
