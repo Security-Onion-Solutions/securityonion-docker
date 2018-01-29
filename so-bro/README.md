@@ -13,7 +13,7 @@ sudo bash securityonion-docker/so-bro/trybro.sh
 
 Then copy `add-interface-to-logs.bro` and `sensortab.bro` from this repo to `/opt/bro/share/bro/securityonion/`:
 ```
-sudo cp securityonion-docker/so-bro/*.bro /opt/bro/share/bro/securityonion/add-interface-to-logs.bro
+sudo cp -av securityonion-docker/so-bro/*.bro /opt/bro/share/bro/securityonion/
 ```
 
 Modify `/opt/bro/etc/afpnode.cfg` to look similar to the following (replacing `eth1` with your actual sniffing interface). If you have `type=standalone`, comment out all 4 standalone lines and add the below with at least 2 lb_procs:
