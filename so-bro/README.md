@@ -39,7 +39,7 @@ af_packet_buffer_size=128*1024*1024
 
 Then run the following:
 ```
-sudo docker run --privileged=true -v /nsm/bro/logs:/nsm/bro/logs -v /nsm/bro/spool:/nsm/bro/spool -v /opt/bro/etc:/opt/bro/etc -v /opt/bro/etc/afpnode.cfg:/opt/bro/etc/node.cfg -v /opt/bro/share/bro:/opt/bro/share/bro --net=host --name=so-bro -t -d toosmooth/so-bro:test1
+sudo docker run --privileged=true -v /nsm/bro/logs:/nsm/bro/logs -v /nsm/bro/spool:/nsm/bro/spool -v /opt/bro/etc:/opt/bro/etc -v /opt/bro/etc/afpnode.cfg:/opt/bro/etc/node.cfg -v /opt/bro/share/bro:/opt/bro/share/bro -v /etc/nsm:/etc/nsm --net=host --name=so-bro -t -d toosmooth/so-bro:test1
 ```
 
 To revert back to the original Bro config:
