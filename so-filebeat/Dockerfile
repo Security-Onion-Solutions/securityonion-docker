@@ -21,7 +21,7 @@ RUN groupadd --gid 931 logstash && \
 
 WORKDIR /usr/share/filebeat
 RUN mkdir data logs && \
-    chown -R root:socore . && \
+    chown -R root:logstash . && \
     find /usr/share/filebeat -type d -exec chmod 0750 {} \; && \
     find /usr/share/filebeat -type f -exec chmod 0640 {} \; && \
     chmod 0750 filebeat && \
