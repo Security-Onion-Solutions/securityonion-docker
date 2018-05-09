@@ -26,8 +26,9 @@ RUN mkdir data logs && \
     find /usr/share/filebeat -type f -exec chmod 0640 {} \; && \
     chmod 0750 filebeat && \
     chmod 0770 modules.d && \
-    chmod 0770 data logs
+    chmod 0770 data logs && \
+    chmod +x /usr/local/bin/docker-entrypoint
 
-USER socore
+USER logstash
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
 CMD ["-e"]
