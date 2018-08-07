@@ -16,14 +16,14 @@ RUN groupadd -g 930 elasticsearch && adduser -u 930 -g 930 -d /usr/share/elastic
 WORKDIR /usr/share/elasticsearch
 
 # Download/extract defined ES version. busybox tar can't strip leading dir.
-RUN wget --progress=bar:force https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-X.Y.Z.tar.gz && \
-    EXPECTED_SHA=$(wget -O - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-X.Y.Z.tar.gz.sha512 | awk '{print $1}') && \
-    test $EXPECTED_SHA == $(sha512sum elasticsearch-X.Y.Z.tar.gz | awk '{print $1}') && \
-    tar zxf elasticsearch-X.Y.Z.tar.gz && \
+RUN wget --progress=bar:force https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-X.Y.Z.tar.gz && \
+    EXPECTED_SHA=$(wget -O - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-X.Y.Z.tar.gz.sha512 | awk '{print $1}') && \
+    test $EXPECTED_SHA == $(sha512sum elasticsearch-oss-X.Y.Z.tar.gz | awk '{print $1}') && \
+    tar zxf elasticsearch-oss-X.Y.Z.tar.gz && \
     chown -R elasticsearch:elasticsearch elasticsearch-X.Y.Z && \
     mv elasticsearch-X.Y.Z/* . && \
     rmdir elasticsearch-X.Y.Z && \
-    rm elasticsearch-X.Y.Z.tar.gz
+    rm elasticsearch-oss-X.Y.Z.tar.gz
 
 RUN set -ex && for esdirs in config data logs; do \
         mkdir -p "$esdirs"; \

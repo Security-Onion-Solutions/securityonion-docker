@@ -4,7 +4,7 @@ FROM centos:7
 LABEL maintainer "Security Onion Solutions, LLC"
 
 RUN yum update -y && \
-    yum install -y python git curl && \
+    yum install -y python python-six git curl && \
     yum clean all
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN python get-pip.py

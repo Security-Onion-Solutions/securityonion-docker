@@ -18,7 +18,7 @@ RUN groupadd --gid 931 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-X.Y.Z.tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-oss-X.Y.Z.tar.gz | \
     tar zxf - -C /usr/share && \
     mv /usr/share/logstash-X.Y.Z /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
