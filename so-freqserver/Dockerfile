@@ -6,7 +6,6 @@ LABEL maintainer "Security Onion Solutions, LLC"
 RUN yum update -y && \
     yum install -y python python-six git && \
     yum clean all
-#RUN cd /opt && git clone https://github.com/SMAPPER/freq_server
 RUN mkdir -p /opt/freq_server && cd /opt/freq_server && git clone https://github.com/MarkBaggett/freq.git
 RUN mkdir /var/log/freq_server
 RUN ln -sf /dev/stderr /var/log/freq_server/freq_server.log
@@ -22,5 +21,4 @@ EXPOSE 10004
 
 STOPSIGNAL SIGTERM
 
-#CMD /usr/bin/python /opt/freq_server/freq/freq_server.py -ip 0.0.0.0 10004 /opt/freq_server/freq/freq_table.freq
-CMD /usr/bin/python /opt/freq_server/freq/freq_server.py -ip 0.0.0.0 10004 /opt/freq_server/freq/freqtable2018.freq
+CMD /usr/bin/python /opt/freq_server/freq/freq_server.py -s 0 -ip 0.0.0.0 10004 /opt/freq_server/freq/freqtable2018.freq
