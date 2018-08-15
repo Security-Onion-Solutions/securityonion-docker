@@ -1,4 +1,4 @@
-Bro 2.5.2 with AF_Packet Docker Container
+Bro 2.5.3 with AF_Packet Docker Container
 NOTE: This will only work on boxes with the elastic features enabled.
 
 Clone this git repo:
