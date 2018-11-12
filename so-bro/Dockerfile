@@ -1,8 +1,8 @@
 FROM centos:7
 
 LABEL maintainer "Security Onion Solutions, LLC"
-LABEL version="Bro 2.5.2"
-LABEL description="Bro 2.5.2 running in a docker for use with Security Onion."
+LABEL version="Bro 2.5.3"
+LABEL description="Bro 2.5.3 running in a docker for use with Security Onion."
 
 RUN yum update -y && \
     yum clean all
@@ -13,7 +13,7 @@ RUN yum -y install jemalloc numactl libnl3 libdnet gdb GeoIP && \
     yum -y erase epel-release && yum clean all && rm -rf /var/cache/yum
 
 # Install the Bro package
-RUN rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/Bro_2.5.2/securityonion-bro-2.5.2.1-securityonion.rpm
+RUN rpm -i https://github.com/Security-Onion-Solutions/securityonion-docker-rpm/releases/download/Bro_2.5.3/securityonion-bro-2.5.3.1-securityonion.rpm
 
 # Replace local.bro with the SO one (This will need reworked)
 #COPY files/local.bro /opt/bro/share/bro/site/local.bro
