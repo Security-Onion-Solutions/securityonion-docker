@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source /etc/nsm/securityonion.conf
-
-curl -XGET http://$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/_cluster/settings 2>/dev/null

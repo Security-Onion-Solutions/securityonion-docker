@@ -1,7 +1,0 @@
-#!/bin/bash
-. /usr/sbin/so-elastic-common
-
-header "Configuring cron jobs"
-#cp -av $SRC/etc/cron.d/curator* /etc/cron.d/
-cp -av $SRC/etc/cron.d/* /etc/cron.d/
-echo "Done!"

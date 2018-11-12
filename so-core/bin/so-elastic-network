@@ -1,7 +1,0 @@
-#!/bin/bash
-
-. /usr/sbin/so-common
-
-. /etc/nsm/securityonion.conf
-
-sudo docker network inspect $DOCKERNET
