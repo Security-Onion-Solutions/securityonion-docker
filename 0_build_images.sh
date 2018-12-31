@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=6.4.3
+VERSION=6.5.4
 DOCKERHUB="dougburks"
 
 echo
