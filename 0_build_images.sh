@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2014,2015,2016,2017,2018 Security Onion Solutions, LLC
+# Copyright 2014,2015,2016,2017,2018,2019 Security Onion Solutions, LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,7 +44,8 @@ docker build -t dougburks/so-elastalert so-elastalert/ &&
 docker build -t dougburks/so-domainstats so-domainstats/ && 
 docker build -t dougburks/so-freqserver so-freqserver/
 
-# Revert the VERSION for next run
+# Clean up for next run
+rm -f so-kibana/bin/so-kibana-plugin.zip
 sed -i "s|$VERSION|X.Y.Z|g" so-elasticsearch/Dockerfile so-logstash/Dockerfile so-kibana/Dockerfile so-kibana/bin/kibana/securityonion_links/package.json
 
 # Display the resulting images
