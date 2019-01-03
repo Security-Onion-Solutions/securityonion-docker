@@ -1,23 +1,7 @@
 #!/bin/bash
 
-FILE="/usr/share/kibana/src/core_plugins/kibana/index.js"
-echo "Before:"
-cat $FILE
-sed -i "s|}],|}, {\n\
-        id: 'kibana:squert',\n\
-        title: 'Squert',\n\
-        order: 9998,\n\
-        url: '/squert',\n\
-        description: 'squert',\n\
-        icon: 'plugins/kibana/assets/play-circle.svg'\n\
-      }, {\n\
-        id: 'kibana:logout',\n\
-        title: 'Logout',\n\
-        order: 9999,\n\
-        url: '/logout.html',\n\
-        description: 'logout',\n\
-        icon: 'plugins/kibana/assets/logout.svg'\n\
-      }],|g" $FILE
-echo
-echo "After:"
-cat $FILE
+# Install plugins but don't optimize until the end
+/usr/share/kibana/bin/kibana-plugin install file:///usr/local/bin/so-kibana-plugin.zip --no-optimize
+
+# Optimize
+/usr/share/kibana/bin/kibana --optimize

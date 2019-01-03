@@ -27,6 +27,7 @@ ADD bin/kibana-docker /usr/local/bin/
 
 # Add our custom Security Onion links to Kibana
 ADD bin/so-kibana-add-links /usr/local/bin/
+ADD bin/so-kibana-plugin.zip /usr/local/bin/
 RUN /usr/local/bin/so-kibana-add-links
 
 # Add a self-signed SSL certificate for use in examples.
