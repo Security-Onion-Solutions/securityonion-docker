@@ -15,38 +15,59 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Set defaults and allow overriding via conf file
 VERSION=6.6.0
+FLAVOR="-oss"
 DOCKERHUB="dougburks"
+[ -f 0_build_images.conf ] && source 0_build_images.conf
 
 echo
-echo "This script will build all Docker images for Security Onion."
-echo
-echo "It is currently set to build Elastic stack version ${VERSION}."
+echo "This script will build all Docker images for Security Onion using the following settings:"
+echo "Elastic stack version: ${VERSION}"
+echo "Docker hub: ${DOCKERHUB}"
+echo "Flavor: ${FLAVOR}"
 echo
 echo "Press Enter to continue or Ctrl-c to cancel."
 read PAUSE
 echo
 
-# Update VERSION for each component
-sed -i "s|X.Y.Z|$VERSION|g" so-elasticsearch/Dockerfile so-logstash/Dockerfile so-kibana/Dockerfile so-kibana/bin/kibana/securityonion_links/package.json
+# Create backup copy of Dockerfiles that we're about to edit
+cp so-elasticsearch/Dockerfile so-elasticsearch/Dockerfile.bak
+cp so-logstash/Dockerfile so-logstash/Dockerfile.bak
+cp so-kibana/Dockerfile so-kibana/Dockerfile.bak
+
+# Update FLAVOR in Dockerfiles
+sed -i "s|ELASTICSEARCHFLAVOR|elasticsearch${FLAVOR}|g" so-elasticsearch/Dockerfile
+sed -i "s|LOGSTASHFLAVOR|logstash${FLAVOR}|g" so-logstash/Dockerfile
+sed -i "s|KIBANAFLAVOR|kibana${FLAVOR}|g" so-kibana/Dockerfile
+
+# Update VERSION in Dockerfiles and Kibana plugin
+sed -i "s|X.Y.Z|${VERSION}|g" so-elasticsearch/Dockerfile so-logstash/Dockerfile so-kibana/Dockerfile so-kibana/bin/kibana/securityonion_links/package.json
 
 # Now that we've updated the VERSION, build a zip file for the new Kibana plugin
 cd so-kibana/bin
 zip -r so-kibana-plugin.zip kibana
 cd - >/dev/null
 
-# Build the Docker images
-docker build -t dougburks/so-elasticsearch so-elasticsearch/ &&
-docker build -t dougburks/so-logstash so-logstash/ && 
-docker build -t dougburks/so-kibana so-kibana/ && 
-docker build -t dougburks/so-curator so-curator/ && 
-docker build -t dougburks/so-elastalert so-elastalert/ && 
-docker build -t dougburks/so-domainstats so-domainstats/ && 
-docker build -t dougburks/so-freqserver so-freqserver/
+# Build the Elastic Stack Docker images
+docker build -t ${DOCKERHUB}/so-elasticsearch so-elasticsearch/ &&
+docker build -t ${DOCKERHUB}/so-logstash so-logstash/ && 
+docker build -t ${DOCKERHUB}/so-kibana so-kibana/
+
+# Build the remaining Docker images
+if [ "${FLAVOR}" = "-oss" ]; then
+	docker build -t ${DOCKERHUB}/so-curator so-curator/ && 
+	docker build -t ${DOCKERHUB}/so-elastalert so-elastalert/ && 
+	docker build -t ${DOCKERHUB}/so-domainstats so-domainstats/ && 
+	docker build -t ${DOCKERHUB}/so-freqserver so-freqserver/
+fi
 
 # Clean up for next run
 rm -f so-kibana/bin/so-kibana-plugin.zip
-sed -i "s|$VERSION|X.Y.Z|g" so-elasticsearch/Dockerfile so-logstash/Dockerfile so-kibana/Dockerfile so-kibana/bin/kibana/securityonion_links/package.json
+sed -i "s|${VERSION}|X.Y.Z|g" so-kibana/bin/kibana/securityonion_links/package.json
+mv so-elasticsearch/Dockerfile.bak so-elasticsearch/Dockerfile
+mv so-logstash/Dockerfile.bak so-logstash/Dockerfile
+mv so-kibana/Dockerfile.bak so-kibana/Dockerfile
 
 # Display the resulting images
 echo

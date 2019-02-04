@@ -16,14 +16,14 @@ RUN groupadd -g 930 elasticsearch && adduser -u 930 -g 930 -d /usr/share/elastic
 WORKDIR /usr/share/elasticsearch
 
 # Download/extract defined ES version. busybox tar can't strip leading dir.
-RUN wget --progress=bar:force https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-X.Y.Z.tar.gz && \
-    EXPECTED_SHA=$(wget -O - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-X.Y.Z.tar.gz.sha512 | awk '{print $1}') && \
-    test $EXPECTED_SHA == $(sha512sum elasticsearch-oss-X.Y.Z.tar.gz | awk '{print $1}') && \
-    tar zxf elasticsearch-oss-X.Y.Z.tar.gz && \
+RUN wget --progress=bar:force https://artifacts.elastic.co/downloads/elasticsearch/ELASTICSEARCHFLAVOR-X.Y.Z.tar.gz && \
+    EXPECTED_SHA=$(wget -O - https://artifacts.elastic.co/downloads/elasticsearch/ELASTICSEARCHFLAVOR-X.Y.Z.tar.gz.sha512 | awk '{print $1}') && \
+    test $EXPECTED_SHA == $(sha512sum ELASTICSEARCHFLAVOR-X.Y.Z.tar.gz | awk '{print $1}') && \
+    tar zxf ELASTICSEARCHFLAVOR-X.Y.Z.tar.gz && \
     chown -R elasticsearch:elasticsearch elasticsearch-X.Y.Z && \
     mv elasticsearch-X.Y.Z/* . && \
     rmdir elasticsearch-X.Y.Z && \
-    rm elasticsearch-oss-X.Y.Z.tar.gz
+    rm ELASTICSEARCHFLAVOR-X.Y.Z.tar.gz
 
 RUN set -ex && for esdirs in config data logs; do \
         mkdir -p "$esdirs"; \
@@ -32,8 +32,7 @@ RUN set -ex && for esdirs in config data logs; do \
 
 USER elasticsearch
 
-# Install x-pack and also the ingest-{agent,geoip} modules required for Filebeat
-#RUN for PLUGIN_TO_INST in ; do elasticsearch-plugin install --batch "$PLUGIN_TO_INST"; done
+# Copy files
 COPY elasticsearch.yml config/
 COPY log4j2.properties config/
 COPY bin/es-docker bin/es-docker

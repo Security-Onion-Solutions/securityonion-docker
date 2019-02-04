@@ -18,7 +18,7 @@ RUN groupadd --gid 931 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-oss-X.Y.Z.tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/LOGSTASHFLAVOR-X.Y.Z.tar.gz | \
     tar zxf - -C /usr/share && \
     mv /usr/share/logstash-X.Y.Z /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
@@ -40,7 +40,7 @@ RUN chmod 0755 /usr/local/bin/docker-entrypoint
 
 USER logstash
 
-# RUN cd /usr/share/logstash && LOGSTASH_PACK_URL=https://artifacts.elastic.co/downloads/logstash-plugins logstash-plugin install x-pack
+# Install plugins
 RUN cd /usr/share/logstash && LOGSTASH_PACK_URL=https://artifacts.elastic.co/downloads/logstash-plugins logstash-plugin install logstash-filter-translate
 RUN cd /usr/share/logstash && LOGSTASH_PACK_URL=https://artifacts.elastic.co/downloads/logstash-plugins logstash-plugin install logstash-filter-tld
 RUN cd /usr/share/logstash && LOGSTASH_PACK_URL=https://artifacts.elastic.co/downloads/logstash-plugins logstash-plugin install logstash-filter-elasticsearch
