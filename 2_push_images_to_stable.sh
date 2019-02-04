@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKERHUBTEST="dougburks"
+DOCKERHUBTEST="securityonionsolutionstest"
 DOCKERHUBPROD="securityonionsolutions"
 if [ $# -eq 2 ]; then
 	DOCKERHUBTEST=$1

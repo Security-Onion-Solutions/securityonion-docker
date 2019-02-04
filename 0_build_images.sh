@@ -18,7 +18,7 @@
 # Set defaults and allow overriding via conf file
 VERSION=6.6.0
 FLAVOR="-oss"
-DOCKERHUB="dougburks"
+DOCKERHUB="securityonionsolutionstest"
 [ $# -eq 1 ] && [ -f $1 ] && source $1
 
 echo

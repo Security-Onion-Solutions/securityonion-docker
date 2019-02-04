@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKERHUB="dougburks"
+DOCKERHUB="securityonionsolutionstest"
 [ $# -eq 1 ] && DOCKERHUB=$1
 
 echo
