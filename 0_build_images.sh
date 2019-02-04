@@ -19,7 +19,7 @@
 VERSION=6.6.0
 FLAVOR="-oss"
 DOCKERHUB="dougburks"
-[ -f 0_build_images.conf ] && source 0_build_images.conf
+[ $# -eq 1 ] && [ -f $1 ] && source $1
 
 echo
 echo "This script will build all Docker images for Security Onion using the following settings:"
