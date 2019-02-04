@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-VERSION=6.5.4
+VERSION=6.6.0
 DOCKERHUB="dougburks"
 
 echo
