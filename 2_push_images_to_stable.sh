@@ -2,6 +2,10 @@
 
 DOCKERHUBTEST="dougburks"
 DOCKERHUBPROD="securityonionsolutions"
+if [ $# -eq 2 ]; then
+	DOCKERHUBTEST=$1
+	DOCKERHUBPROD=$2
+fi
 
 echo "This script will push latest images from ${DOCKERHUBTEST} to ${DOCKERHUBPROD}."
 echo

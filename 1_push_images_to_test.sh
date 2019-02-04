@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DOCKERHUB="dougburks"
+[ $# -eq 1 ] && DOCKERHUB=$1
 
 echo
 echo "This script will push all Docker images to:"
