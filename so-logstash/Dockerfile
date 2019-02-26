@@ -1,4 +1,4 @@
-FROM docker.elastic.co/logstash/logstash-oss:6.6.1
+FROM docker.elastic.co/logstash/LOGSTASHFLAVOR:X.Y.Z
 
 USER 931
 

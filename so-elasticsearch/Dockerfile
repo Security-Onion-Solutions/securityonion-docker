@@ -1,3 +1,3 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch-oss:6.6.1
+FROM docker.elastic.co/elasticsearch/ELASTICSEARCHFLAVOR:X.Y.Z
 
 USER 930
