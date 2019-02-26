@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Set defaults and allow overriding via conf file
-VERSION=6.6.0
+VERSION=6.6.1
 FLAVOR="-oss"
 DOCKERHUB="securityonionsolutionstest"
 [ $# -eq 1 ] && [ -f $1 ] && source $1
@@ -48,6 +48,11 @@ sed -i "s|X.Y.Z|${VERSION}|g" so-elasticsearch/Dockerfile so-logstash/Dockerfile
 cd so-kibana/bin
 zip -r so-kibana-plugin.zip kibana
 cd - >/dev/null
+
+# Our current Dockerfiles pull FROM Elastic's Docker images.
+# However, Elastic currently does not sign their Docker images.
+# https://github.com/elastic/elasticsearch-docker/issues/158
+export DOCKER_CONTENT_TRUST=0
 
 # Build the Elastic Stack Docker images
 docker build -t ${DOCKERHUB}/so-elasticsearch so-elasticsearch/ &&
