@@ -75,9 +75,7 @@ RUN yum update -y && \
 WORKDIR ${ELASTALERT_HOME}
 
 # Install Elastalert.
-RUN pip uninstall twilio --yes; \
-    pip install twilio==6.0.0; \
-    python setup.py install; \
+RUN python setup.py install; \
 
 # Install Supervisor.
     easy_install supervisor; \
