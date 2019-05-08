@@ -4,6 +4,10 @@ FROM centos:7
 
 LABEL maintainer "Security Onion Solutions, LLC"
 
+# Create a common centos update layer
+RUN yum update -y && \
+    yum clean all
+
 # Set this environment variable to true to set timezone on container start.
 ENV SET_CONTAINER_TIMEZONE false
 
@@ -41,7 +45,6 @@ ENV ELASTICSEARCH_HOST elasticsearch
 ENV ELASTICSEARCH_PORT 9200
 
 # Add ElastAlert user
-#RUN useradd -ms /bin/bash elastalert
 RUN groupadd --gid 933 elastalert && \
     adduser --uid 933 --gid 933 \
       --home-dir /usr/share/elastalert --no-create-home \

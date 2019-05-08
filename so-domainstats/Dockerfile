@@ -3,21 +3,31 @@ FROM centos:7
 # Originally developed by Justin Henderson justin@hasecuritysolutions.com
 LABEL maintainer "Security Onion Solutions, LLC"
 
+# Create a common centos update layer
 RUN yum update -y && \
-    yum install -y python python-six git curl && \
     yum clean all
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python get-pip.py
-RUN cd /opt && git clone https://github.com/MarkBaggett/domain_stats.git
-RUN pip install python-whois
-RUN mkdir /var/log/domain_stats
-RUN ln -sf /dev/stderr /var/log/domain_stats/domain_stats.log
-#RUN useradd -ms /bin/bash domain_stats
+
+# Create a common python/git layer
+RUN yum update -y && \
+    yum install -y python python-six git && \
+    yum clean all
+
+# Create user
 RUN groupadd --gid 936 domainstats && \
     adduser --uid 936 --gid 936 \
       --home-dir /usr/share/domainstats --no-create-home \
       domainstats
-RUN chown -R domainstats: /opt/domain_stats
+
+# Install and set perms in same layer to save space
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+	python get-pip.py && \
+	cd /opt && \
+	git clone https://github.com/MarkBaggett/domain_stats.git && \
+	pip install python-whois && \
+	mkdir /var/log/domain_stats && \
+	ln -sf /dev/stderr /var/log/domain_stats/domain_stats.log && \
+	chown -R domainstats: /opt/domain_stats
+
 USER domainstats
 
 EXPOSE 20000
