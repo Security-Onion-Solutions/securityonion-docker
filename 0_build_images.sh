@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Set defaults and allow overriding via conf file
-VERSION=6.7.2
+VERSION=6.8.1
 FLAVOR="-oss"
 DOCKERHUB="securityonionsolutionstest"
 [ $# -eq 1 ] && [ -f $1 ] && source $1
@@ -32,47 +32,63 @@ read PAUSE
 echo
 
 # Create backup copy of Dockerfiles that we're about to edit
-cp so-elasticsearch/Dockerfile so-elasticsearch/Dockerfile.bak
-cp so-logstash/Dockerfile so-logstash/Dockerfile.bak
-cp so-kibana/Dockerfile so-kibana/Dockerfile.bak
+cp so-elasticsearch/Dockerfile 	so-elasticsearch/Dockerfile.bak
+cp so-logstash/Dockerfile 	so-logstash/Dockerfile.bak
+cp so-kibana/Dockerfile 	so-kibana/Dockerfile.bak
 
 # Update FLAVOR in Dockerfiles
 sed -i "s|ELASTICSEARCHFLAVOR|elasticsearch${FLAVOR}|g" so-elasticsearch/Dockerfile
-sed -i "s|LOGSTASHFLAVOR|logstash${FLAVOR}|g" so-logstash/Dockerfile
-sed -i "s|KIBANAFLAVOR|kibana${FLAVOR}|g" so-kibana/Dockerfile
+sed -i "s|LOGSTASHFLAVOR|logstash${FLAVOR}|g" 		so-logstash/Dockerfile
+sed -i "s|KIBANAFLAVOR|kibana${FLAVOR}|g" 		so-kibana/Dockerfile
 
 # Update VERSION in Dockerfiles and Kibana plugin
 sed -i "s|X.Y.Z|${VERSION}|g" so-elasticsearch/Dockerfile so-logstash/Dockerfile so-kibana/Dockerfile so-kibana/bin/kibana/securityonion_links/package.json
-
-# Now that we've updated the VERSION, build a zip file for the new Kibana plugin
-cd so-kibana/bin
-zip -r so-kibana-plugin.zip kibana
-cd - >/dev/null
 
 # Our current Dockerfiles pull FROM Elastic's Docker images.
 # However, Elastic currently does not sign their Docker images.
 # https://github.com/elastic/elasticsearch-docker/issues/158
 export DOCKER_CONTENT_TRUST=0
 
-# Build the Elastic Stack Docker images
-docker build -t ${DOCKERHUB}/so-elasticsearch so-elasticsearch/ &&
-docker build -t ${DOCKERHUB}/so-logstash so-logstash/ && 
-docker build -t ${DOCKERHUB}/so-kibana so-kibana/
+# Build Elasticsearch and Logstash Docker images
+docker build -t ${DOCKERHUB}/so-elasticsearch 	so-elasticsearch/ 
+docker build -t ${DOCKERHUB}/so-logstash 	so-logstash/
 
-# Build the remaining Docker images
-if [ "${FLAVOR}" = "-oss" ]; then
-	docker build -t ${DOCKERHUB}/so-curator so-curator/ && 
-	docker build -t ${DOCKERHUB}/so-elastalert so-elastalert/ && 
-	docker build -t ${DOCKERHUB}/so-domainstats so-domainstats/ && 
-	docker build -t ${DOCKERHUB}/so-freqserver so-freqserver/
+# Open Source or Features version under the Elastic license?
+if [ "${FLAVOR}" == "-oss" ]; then
+	# Open Source
+
+	# Build a zip file for our Kibana plugin
+	cd so-kibana/bin
+	zip -r so-kibana-plugin.zip kibana
+	cd - >/dev/null
+
+	# Build Kibana, install our plugin, then delete the zip file
+	docker build -t ${DOCKERHUB}/so-kibana 	so-kibana/
+	rm -f so-kibana/bin/so-kibana-plugin.zip
+
+	# Build last 4 Docker images
+	docker build -t ${DOCKERHUB}/so-curator 	so-curator/
+	docker build -t ${DOCKERHUB}/so-elastalert 	so-elastalert/
+	docker build -t ${DOCKERHUB}/so-domainstats 	so-domainstats/
+	docker build -t ${DOCKERHUB}/so-freqserver 	so-freqserver/
+else
+	# Features version under Elastic license
+
+	# Build Kibana without our plugin
+	head -3 so-kibana/Dockerfile > 		so-kibana/Dockerfile.features
+	cp so-kibana/Dockerfile 		so-kibana/Dockerfile.oss
+	mv so-kibana/Dockerfile.features 	so-kibana/Dockerfile
+	docker build -t ${DOCKERHUB}/so-kibana 	so-kibana/
+	mv so-kibana/Dockerfile.oss 		so-kibana/Dockerfile
+
+	# No need to build last 4 Docker images as we've already built them and will just tag them with new names
 fi
 
 # Clean up for next run
-rm -f so-kibana/bin/so-kibana-plugin.zip
-sed -i "s|${VERSION}|X.Y.Z|g" so-kibana/bin/kibana/securityonion_links/package.json
-mv so-elasticsearch/Dockerfile.bak so-elasticsearch/Dockerfile
-mv so-logstash/Dockerfile.bak so-logstash/Dockerfile
-mv so-kibana/Dockerfile.bak so-kibana/Dockerfile
+sed -i "s|${VERSION}|X.Y.Z|g" 		so-kibana/bin/kibana/securityonion_links/package.json
+mv so-elasticsearch/Dockerfile.bak 	so-elasticsearch/Dockerfile
+mv so-logstash/Dockerfile.bak 		so-logstash/Dockerfile
+mv so-kibana/Dockerfile.bak 		so-kibana/Dockerfile
 
 # Display the resulting images
 echo
