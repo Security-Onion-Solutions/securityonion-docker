@@ -77,6 +77,9 @@ RUN yum update -y && \
 
 WORKDIR ${ELASTALERT_HOME}
 
+# Copy over Elastalert mappings
+COPY ./files/elastalert.json ./files/past_elastalert.json elastalert/es_mappings/6/
+
 # Install Elastalert.
 RUN python setup.py install; \
 
