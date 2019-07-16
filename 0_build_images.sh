@@ -62,9 +62,8 @@ if [ "${FLAVOR}" == "-oss" ]; then
 	zip -r so-kibana-plugin.zip kibana
 	cd - >/dev/null
 
-	# Build Kibana, install our plugin, then delete the zip file
+	# Build Kibana and  install our plugin
 	docker build -t ${DOCKERHUB}/so-kibana 	so-kibana/
-	rm -f so-kibana/bin/so-kibana-plugin.zip
 
 	# Build last 4 Docker images
 	docker build -t ${DOCKERHUB}/so-curator 	so-curator/
@@ -74,17 +73,26 @@ if [ "${FLAVOR}" == "-oss" ]; then
 else
 	# Features version under Elastic license
 
-	# Build Kibana without our plugin
-	head -3 so-kibana/Dockerfile > 		so-kibana/Dockerfile.features
-	cp so-kibana/Dockerfile 		so-kibana/Dockerfile.oss
-	mv so-kibana/Dockerfile.features 	so-kibana/Dockerfile
+	# Remove Logout link from our plugin
+	cp so-kibana/bin/kibana/securityonion_links/index.js so-kibana/bin/kibana/securityonion_links/index.js.orig
+	sed -i '14,21d' so-kibana/bin/kibana/securityonion_links/index.js
+
+	# Build a zip file for our Kibana plugin
+	cd so-kibana/bin
+	zip -r so-kibana-plugin.zip kibana
+	cd - >/dev/null
+
+	# Build Kibana and  install our plugin
 	docker build -t ${DOCKERHUB}/so-kibana 	so-kibana/
-	mv so-kibana/Dockerfile.oss 		so-kibana/Dockerfile
+
+	# Revert plugin
+	mv so-kibana/bin/kibana/securityonion_links/index.js.orig so-kibana/bin/kibana/securityonion_links/index.js
 
 	# No need to build last 4 Docker images as we've already built them and will just tag them with new names
 fi
 
 # Clean up for next run
+rm -f 					so-kibana/bin/so-kibana-plugin.zip
 sed -i "s|${VERSION}|X.Y.Z|g" 		so-kibana/bin/kibana/securityonion_links/package.json
 mv so-elasticsearch/Dockerfile.bak 	so-elasticsearch/Dockerfile
 mv so-logstash/Dockerfile.bak 		so-logstash/Dockerfile
