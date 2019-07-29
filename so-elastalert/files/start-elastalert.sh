@@ -15,36 +15,38 @@ fi
 # In addition you may want to add the SYS_NICE capability, in order for ntpd to be able to modify its priority.
 # ntpd -s
 
+# Support Elastic Auth
+if grep -q "^es_username:" ${ELASTALERT_CONFIG}; then
+	ELASTICSEARCH_USERNAME=$(grep "^es_username:" ${ELASTALERT_CONFIG} | awk '{print $2}')
+	ELASTICSEARCH_PASSWORD=$(grep "^es_password:" ${ELASTALERT_CONFIG} | awk '{print $2}')
+	ELASTICSEARCH_AUTH="--user=${ELASTICSEARCH_USERNAME} --password=${ELASTICSEARCH_PASSWORD}"
+	ELASTALERT_CREATE_INDEX_AUTH="--username ${ELASTICSEARCH_USERNAME} --password ${ELASTICSEARCH_PASSWORD}"
+fi
+
 # Wait until Elasticsearch is online since otherwise Elastalert will fail.
-rm -f garbage_file
-while ! wget -O garbage_file ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT} 2>/dev/null
-do
+while ! wget ${ELASTICSEARCH_AUTH} ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT} >/dev/null 2>&1; do
 	echo "Waiting for Elasticsearch..."
-	rm -f garbage_file
 	sleep 1
 done
-rm -f garbage_file
 sleep 5
 
 # Check if the Elastalert index exists in Elasticsearch and create it if it does not.
-if ! wget -O garbage_file ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert_status 2>/dev/null
-then
-	echo "Creating Elastalert index in Elasticsearch..."
-    elastalert-create-index --host ${ELASTICSEARCH_HOST} --port ${ELASTICSEARCH_PORT} --config ${ELASTALERT_CONFIG} --index elastalert_status --old-index ""
+if wget ${ELASTICSEARCH_AUTH} ${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/elastalert_status >/dev/null 2>&1; then
+	echo "Elastalert index already exists in Elasticsearch."
 else
-    echo "Elastalert index already exists in Elasticsearch."
+	echo "Creating Elastalert index in Elasticsearch..."
+	elastalert-create-index ${ELASTALERT_CREATE_INDEX_AUTH} --host ${ELASTICSEARCH_HOST} --port ${ELASTICSEARCH_PORT} --config ${ELASTALERT_CONFIG} --index elastalert_status --old-index ""
 fi
-rm -f garbage_file
 
 # Elastalert configuration:
 # Set the rule directory in the Elastalert config file to external rules directory.
-sed -i -e"s|^rules_folder: [[:print:]]*|rules_folder: ${RULES_DIRECTORY}|g" ${ELASTALERT_CONFIG}; \
+#sed -i -e"s|^rules_folder: [[:print:]]*|rules_folder: ${RULES_DIRECTORY}|g" ${ELASTALERT_CONFIG}; \
 
 # Set the Elasticsearch host that Elastalert is to query.
-sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${ELASTALERT_CONFIG}; \
+#sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${ELASTALERT_CONFIG}; \
 
 # Set the port used by Elasticsearch at the above address.
-sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${ELASTALERT_CONFIG}; \
+#sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${ELASTALERT_CONFIG}; \
 
 # Elastalert Supervisor configuration:
 # Redirect Supervisor log output to a file in the designated logs directory.
