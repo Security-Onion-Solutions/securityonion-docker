@@ -56,7 +56,7 @@ sed -i -e"s|logfile=.*log|logfile=${LOG_DIR}/elastalert_supervisord.log|g" ${ELA
 sed -i -e"s|stderr_logfile=.*log|stderr_logfile=${LOG_DIR}/elastalert_stderr.log|g" ${ELASTALERT_SUPERVISOR_CONF}; \
 
 # Modify the start-command.
-sed -i -e"s|python elastalert.py|python -m elastalert.elastalert --config ${ELASTALERT_CONFIG}|g" ${ELASTALERT_SUPERVISOR_CONF}; \
+sed -i -e"s|python elastalert.py|python3.6 -m elastalert.elastalert --config ${ELASTALERT_CONFIG}|g" ${ELASTALERT_SUPERVISOR_CONF}; \
 
 echo "Starting Elastalert..."
 exec supervisord -c ${ELASTALERT_SUPERVISOR_CONF} -n

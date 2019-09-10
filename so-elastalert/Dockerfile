@@ -60,14 +60,29 @@ COPY ./files/elastalert_supervisord.conf ${ELASTALERT_SUPERVISOR_CONF}
 # Install software required for Elastalert and NTP for time synchronization.
 #RUN yum install -y unzip wget ntp.x86_64 openssl-devel.x86_64 openssl.x86_64 libffi.x86_64 libffi-devel.x86_64 python-devel.x86_64 gcc.x86_64 compat-gcc-44.x86_64 libgcc.x86_64 tzdata.noarch; \
 #    rm -rf /var/cache/yum/*; \
-RUN yum update -y && \
-    yum install -y unzip wget ntp.x86_64 openssl-devel.x86_64 openssl.x86_64 libffi.x86_64 libffi-devel.x86_64 python-devel.x86_64 gcc.x86_64 compat-gcc-44.x86_64 libgcc.x86_64 tzdata.noarch && \
-    yum clean all; \
+RUN yum update -y && yum -y install epel-release && \
+    yum install -y \
+      https://centos7.iuscommunity.org/ius-release-el7.rpm \
+      unzip \
+      wget \
+      ntp.x86_64 \
+      openssl-devel.x86_64 \
+      openssl.x86_64 \
+      libffi.x86_64 \
+      libffi-devel.x86_64 \
+      libyaml-devel \
+      gcc.x86_64 \
+      compat-gcc-44.x86_64 \
+      libgcc.x86_64 \
+      tzdata.noarch
 
+RUN yum -y makecache && yum -y install python36u python36u-libs python36u-devel python36u-pip && pip3.6 install --upgrade pip && \
+    yum clean all; \
+  
 # Install pip - required for installation of Elastalert.
-    wget https://bootstrap.pypa.io/get-pip.py; \
-    python get-pip.py; \
-    rm -rf get-pip.py; \
+    #wget https://bootstrap.pypa.io/get-pip.py; \
+    #python get-pip.py; \
+    #rm -rf get-pip.py; \
 
 # Download and unpack Elastalert.
     wget ${ELASTALERT_URL}; \
@@ -81,7 +96,7 @@ WORKDIR ${ELASTALERT_HOME}
 COPY ./files/elastalert.json ./files/past_elastalert.json elastalert/es_mappings/6/
 
 # Install Elastalert.
-RUN python setup.py install; \
+RUN python3.6 setup.py install; \
 
 # Install Supervisor.
     easy_install supervisor; \
@@ -127,7 +142,7 @@ RUN python setup.py install; \
     sed -i -e"s|stderr_logfile=.*log|stderr_logfile=${LOG_DIR}/elastalert_stderr.log|g" ${ELASTALERT_SUPERVISOR_CONF}; \
 
     # Modify the start-command.
-    sed -i -e"s|python elastalert.py|python -m elastalert.elastalert --config ${ELASTALERT_CONFIG}|g" ${ELASTALERT_SUPERVISOR_CONF}; \
+    sed -i -e"s|python elastalert.py|python3.6 -m elastalert.elastalert --config ${ELASTALERT_CONFIG}|g" ${ELASTALERT_SUPERVISOR_CONF}; \
 
 # Copy the Elastalert configuration file to Elastalert home directory to be used when creating index first time an Elastalert container is launched.
     cp ${ELASTALERT_CONFIG} ${ELASTALERT_HOME}/config.yaml; \
