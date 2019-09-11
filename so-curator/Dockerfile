@@ -8,15 +8,20 @@ RUN yum update -y && \
 
 # Create user
 RUN groupadd --gid 934 curator && \
-    adduser --uid 934 --gid 934 \
+      adduser --uid 934 --gid 934 \
       --home-dir /usr/share/curator --no-create-home \
-      curator
+      curator && \
+    rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
 
-# Install and set perms in same layer to save space
-RUN curl --silent --show-error --retry 5 https://bootstrap.pypa.io/get-pip.py | python && \
-	pip install elasticsearch-curator && \
-	chown -R curator: /usr/bin/curator*
+COPY ./files/curator.repo /etc/yum.repos.d/curator.repo
+
+RUN yum update -y && \
+    yum install -y elasticsearch-curator && \
+    chown -R curator: /opt/elasticsearch-curator /usr/bin/curator* && \
+    yum clean all
 
 USER curator
+
+ENV LC_ALL en_US.UTF-8
 
 ENTRYPOINT ["/bin/bash"]
