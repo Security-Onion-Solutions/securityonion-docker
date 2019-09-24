@@ -58,8 +58,6 @@ COPY ./files/elastalert_config.conf ${ELASTALERT_CONFIG}
 COPY ./files/elastalert_supervisord.conf ${ELASTALERT_SUPERVISOR_CONF} 
 
 # Install software required for Elastalert and NTP for time synchronization.
-#RUN yum install -y unzip wget ntp.x86_64 openssl-devel.x86_64 openssl.x86_64 libffi.x86_64 libffi-devel.x86_64 python-devel.x86_64 gcc.x86_64 compat-gcc-44.x86_64 libgcc.x86_64 tzdata.noarch; \
-#    rm -rf /var/cache/yum/*; \
 RUN yum update -y && yum -y install epel-release && \
     yum install -y \
       https://centos7.iuscommunity.org/ius-release-el7.rpm \
@@ -74,15 +72,14 @@ RUN yum update -y && yum -y install epel-release && \
       gcc.x86_64 \
       compat-gcc-44.x86_64 \
       libgcc.x86_64 \
-      tzdata.noarch
+      tzdata.noarch;
 
-RUN yum -y makecache && yum -y install python36u python36u-libs python36u-devel python36u-pip && pip3.6 install --upgrade pip && \
+RUN yum -y makecache && \
+    yum -y install \
+      python36-devel.x86_64 \
+      python36-libs.x86_64 \
+      python36-pip.noarch \
     yum clean all; \
-  
-# Install pip - required for installation of Elastalert.
-    #wget https://bootstrap.pypa.io/get-pip.py; \
-    #python get-pip.py; \
-    #rm -rf get-pip.py; \
 
 # Download and unpack Elastalert.
     wget ${ELASTALERT_URL}; \
@@ -97,6 +94,9 @@ COPY ./files/elastalert.json ./files/past_elastalert.json elastalert/es_mappings
 
 # Install Elastalert.
 RUN python3.6 setup.py install; \
+
+# Install Supervisor.
+    python3.6 -m pip install supervisor; \
 
 # Install Supervisor.
     easy_install supervisor; \
@@ -118,7 +118,7 @@ RUN python3.6 setup.py install; \
     chown -R elastalert:elastalert ${ELASTALERT_HOME}; \
     chown -R elastalert:elastalert /var/run/elastalert/; \
     chown elastalert:elastalert /opt/start-elastalert.sh; \
-    chown elastalert:elastalert /usr/bin/supervisord; \
+    chown elastalert:elastalert /usr/local/bin/supervisord; \
 
 # Elastalert configuration:
     # Set the rule directory in the Elastalert config file to external rules directory.
