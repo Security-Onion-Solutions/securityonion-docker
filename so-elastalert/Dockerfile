@@ -72,13 +72,14 @@ RUN yum update -y && yum -y install epel-release && \
       gcc.x86_64 \
       compat-gcc-44.x86_64 \
       libgcc.x86_64 \
-      tzdata.noarch;
+      tzdata.noarch; \
+    yum clean all;
 
 RUN yum -y makecache && \
     yum -y install \
       python36-devel.x86_64 \
       python36-libs.x86_64 \
-      python36-pip.noarch \
+      python36-pip.noarch; \
     yum clean all; \
 
 # Download and unpack Elastalert.
