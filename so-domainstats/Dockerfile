@@ -22,7 +22,7 @@ RUN groupadd --gid 936 domainstats && \
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 	python get-pip.py && \
 	cd /opt && \
-	git clone https://github.com/MarkBaggett/domain_stats.git && \
+	git clone -b domain_stats_1 https://github.com/MarkBaggett/domain_stats.git && \
 	pip install python-whois && \
 	mkdir /var/log/domain_stats && \
 	ln -sf /dev/stderr /var/log/domain_stats/domain_stats.log && \
