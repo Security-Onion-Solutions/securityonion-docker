@@ -60,7 +60,7 @@ COPY ./files/elastalert_supervisord.conf ${ELASTALERT_SUPERVISOR_CONF}
 # Install software required for Elastalert and NTP for time synchronization.
 RUN yum update -y && yum -y install epel-release && \
     yum install -y \
-      https://centos7.iuscommunity.org/ius-release-el7.rpm \
+      https://repo.ius.io/ius-release-el7.rpm \
       unzip \
       wget \
       ntp.x86_64 \
