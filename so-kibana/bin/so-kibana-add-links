@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# Install plugins but don't optimize until the end
-/usr/share/kibana/bin/kibana-plugin install file:///usr/local/bin/so-kibana-plugin.zip --no-optimize
-
-# Optimize
-/usr/share/kibana/bin/kibana --optimize
