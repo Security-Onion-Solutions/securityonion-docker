@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Set defaults and allow overriding via conf file
-VERSION=7.9.2
+VERSION=7.9.3
 FLAVOR="-oss"
 DOCKERHUB="securityonionsolutionstest"
 [ $# -eq 1 ] && [ -f $1 ] && source $1
