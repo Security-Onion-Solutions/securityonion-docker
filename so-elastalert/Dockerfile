@@ -94,7 +94,8 @@ WORKDIR ${ELASTALERT_HOME}
 COPY ./files/elastalert.json ./files/past_elastalert.json elastalert/es_mappings/6/
 
 # Install Elastalert.
-RUN python3.6 setup.py install; \
+RUN sed -i "/twilio.*/a \        'tzlocal<3.0'," setup.py; \
+    python3.6 setup.py install; \
 
 # Install Supervisor.
     python3.6 -m pip install supervisor; \
