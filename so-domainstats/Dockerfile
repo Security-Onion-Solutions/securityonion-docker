@@ -19,7 +19,7 @@ RUN groupadd --gid 936 domainstats && \
       domainstats
 
 # Install and set perms in same layer to save space
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+RUN curl https://bootstrap.pypa.io/2.7/get-pip.py -o get-pip.py && \
 	python get-pip.py && \
 	cd /opt && \
 	git clone -b domain_stats_1 https://github.com/MarkBaggett/domain_stats.git && \

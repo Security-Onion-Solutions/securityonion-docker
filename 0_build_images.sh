@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2014,2015,2016,2017,2018,2019,2020 Security Onion Solutions, LLC
+# Copyright 2014,2015,2016,2017,2018,2019,2020,2021 Security Onion Solutions, LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Set defaults and allow overriding via conf file
-VERSION=7.9.3
+VERSION=7.10.2
 FLAVOR="-oss"
 DOCKERHUB="securityonionsolutionstest"
 [ $# -eq 1 ] && [ -f $1 ] && source $1
